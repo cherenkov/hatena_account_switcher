@@ -12,21 +12,21 @@ li {
 onload = init;
 
 var BackGround = chrome.extension.getBackgroundPage();
-var Config = BackGround.Config;
+var Bob = BackGround.Bob;
 
 function init() {
-  var userInfo = Config.getUserInfo();
+  var userInfo = Bob.getUserInfo();
   userInfo.forEach(function(data) {
     var item = document.createElement('input');
     item.type = 'radio';
     item.name = 'account';
     item.id = data.name;
-    if (data.name == Config.currentUser) item.checked = true;
+    if (data.name == Bob.currentUser) item.checked = true;
     item.onclick = function() {
       chrome.cookies.get({ url: "http://www.hatena.ne.jp/", name: "rk"}, function(cookie) {
-        Config.changeCookie(cookie, data.rk);
-        Config.currentUser = data.name;
-        Config.reload();
+        Bob.changeCookie(cookie, data.rk);
+        Bob.currentUser = data.name;
+        Bob.reload();
       });
     }
     var li = document.createElement('li');

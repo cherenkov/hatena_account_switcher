@@ -5,7 +5,7 @@
 </head>
 <script type="text/javascript">
 var BackGround = chrome.extension.getBackgroundPage();
-var Config = BackGround.Config;
+var Bob = BackGround.Bob;
 
 function restoreOptions() {
   var userInfo = localStorage['user_info'];
@@ -34,7 +34,7 @@ function textareaBlur() {
 
 function saveOptions() {
   var text = document.getElementById('userInfo').value;
-  Config.saveUserInfo(text);
+  Bob.saveUserInfo(text);
 }
 
 function resetOptions() {
@@ -42,8 +42,8 @@ function resetOptions() {
   var text = '{\n  name: "shinamon(sample)",\n  rk: "21e7b1941"\n},\n{\n  name: "konamon(sample)",\n  rk: "ac3252af2"\n}';
   document.getElementById('userInfo').value = text;
   localStorage['user_info'] = text;
-  Config.currentUser = '';
-  Config.notification('Reset', 'Delete user data.');
+  Bob.currentUser = '';
+  Bob.notification('Reset', 'Delete user data.');
 }
 </script>
 <body onload="restoreOptions()">
