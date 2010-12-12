@@ -1,0 +1,90 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Option - Hatena Account Switcher</title>
+</head>
+<script type="text/javascript">
+var BackGround = chrome.extension.getBackgroundPage();
+var Config = BackGround.Config;
+
+function restoreOptions() {
+  var userInfo = localStorage['user_info'];
+  if(!localStorage['user_info']) {
+    userInfo = '{\n  name: "shinamon(sample)",\n  rk: "21e7b1941"\n},\n{\n  name: "konamon(sample)",\n  rk: "ac3252af2"\n}';
+    localStorage['user_info'] = userInfo;
+  }
+  document.getElementById('userInfo').value = userInfo;
+}
+
+var tid;
+
+function textareaFocus() {
+  var btn = document.getElementById('saveBtn');
+  tid = setInterval(function() {
+    if(btn.size == 2)
+      btn.size = 3;
+    else
+      btn.size = 2;
+  }, 1500);
+}
+
+function textareaBlur() {
+   clearInterval(tid);
+}
+
+function saveOptions() {
+  var text = document.getElementById('userInfo').value;
+  Config.saveUserInfo(text);
+}
+
+function resetOptions() {
+  if(!confirm('Are you sure ?')) return;
+  var text = '{\n  name: "shinamon(sample)",\n  rk: "21e7b1941"\n},\n{\n  name: "konamon(sample)",\n  rk: "ac3252af2"\n}';
+  document.getElementById('userInfo').value = text;
+  localStorage['user_info'] = text;
+  Config.currentUser = '';
+  Config.notification('Reset', 'Delete user data.');
+}
+</script>
+<body onload="restoreOptions()">
+  <h1>Hatena Account Switcher</h1>
+  <h2>Option</h2>
+  <fieldset>
+    <legend>使い方</legend>
+    ロケーションバー横のアイコンをクリックして、ユーザー名を選択するだけで、
+    どのページからでもcookieを書き換えることが出来ます。
+  </fieldset>
+  <br>
+  <fieldset>
+    <legend>注意点</legend>
+    <u>ログアウトした状態では動作しません。必ずどれかのアカウントにログインした状態でお使いください。</u>
+    <br><br>
+    <small>（Chrome拡張cookie APIが規定のプロパティを受け入れない仕様の弊害と思われる）</small>
+  </fieldset>
+  <br>
+  <fieldset>
+    <legend>設定方法</legend>
+    ログインした状態で <a href="http://www.hatena.ne.jp/">http://www.hatena.ne.jp/</a>、 はてダ、はてブ などはてなのcookieが取れるページで
+    以下のブックマークレットを実行するとプロンプトがでます。その値がrkです。rkをコピーして下のAccountに入力してください。
+    <br><br>
+    <input type="text" size="70" value="javascript:void(prompt('',document.cookie.match(/\srk=([^;]+)/)[1]));" onclick="this.select()">
+  </fieldset>
+  <br>
+  <fieldset>
+    <legend>Account</legend>
+    入力例： {name: "shinamon", rk: "21e7b..."}, {name: "konamon", rk: "ac325..."} 
+    <br>
+    書式が正しくないと保存されません。nameは自由に設定できます。半角スペース、/* */によるコメントも自由です。変更したらSaveボタンで保存してください。
+    <br><br>
+    <textarea id="userInfo" cols="70" rows="20" onfocus="textareaFocus()" onblur="textareaBlur()"></textarea>
+    <br><br>
+    <button onclick="saveOptions()"><font id="saveBtn" size="2">Save</font></button>
+    <button onclick="resetOptions()"><font id="resetBtn" size="2">Reset</font></button>
+  </fieldset>
+  <br><br>
+  author: <a href="http://twitter.com/cherenkov">@cherenkov</a>
+  <br>
+  repository: <a href="https://github.com/cherenkov/hatena_account_switcher">github</a>
+  <br><br><br><br>
+</body>
+</html>

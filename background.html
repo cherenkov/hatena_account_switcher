@@ -1,0 +1,71 @@
+<html>
+<head>
+<script>
+Config = {
+  currentUser: '',
+
+  getUserInfo: function() {
+    var text = localStorage['user_info'];
+    if(!localStorage['user_info']) {
+      text = '{\n  name: "shinamon(sample)",\n  rk: "21e7b1941"\n},\n{\n  name: "konamon(sample)",\n  rk: "ac3252af2"\n}';
+      localStorage['user_info'] = text;
+    }
+    text = '[' + text + ']';
+    return (new Function('return ' + text))()
+  },
+
+  saveUserInfo: function(text) {
+    if (this.checkUserInfoData(text)) {
+      localStorage['user_info'] = text;
+      this.notification('Save!', 'done.');
+    }
+  },
+
+  changeCookie: function(cookie, rk) {
+    //リファレンスに載ってない属性があるとsetできないのでurl属性を足したり余分なのを消したり。
+    //http://code.google.com/chrome/extensions/cookies.html
+    cookie.value = rk;
+    cookie.url = 'http://www.hatena.ne.jp/';
+    delete cookie.hostOnly;
+    delete cookie.session;
+    chrome.cookies.set(cookie);
+  },
+
+  checkUserInfoData: function(text) {
+    text = '[' + text + ']';
+    try {
+      var data = (new Function('return ' + text))();
+    } catch (e) {
+      this.notification('Error!', 'Syntax error.');
+      console.log(e);
+    }
+    var jadge = data.every(function(e) {
+      var count = 0;
+      for (var prop in e) {
+        count++;
+        if(!/^name$|^rk$/.test(prop))
+          return false;
+      }
+      return (count === 2);
+    });
+    if (jadge) {
+      return true;
+    } else {
+      this.notification('Error!', 'Jadge - Against the rules!');
+      return false;
+    }
+  },
+
+  notification: function(title, msg) {
+    var notification = webkitNotifications.createNotification('icon48.png', title, msg);
+    notification.show();
+    setTimeout(function(){notification.cancel();}, 3000);
+  },
+
+  reload: function() {
+    chrome.tabs.executeScript(null, { code: "if (/\.hatena\.ne\.jp/.test(location.host)) location.reload()"});
+  }
+}
+</script>
+</head>
+</html>

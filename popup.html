@@ -1,0 +1,43 @@
+<style>
+body {
+  width: 150px;
+}
+
+li {
+  margin-left: 0px;
+  list-style-type: none;
+}
+</style>
+<script>
+onload = init;
+
+var BackGround = chrome.extension.getBackgroundPage();
+var Config = BackGround.Config;
+
+function init() {
+  var userInfo = Config.getUserInfo();
+  userInfo.forEach(function(data) {
+    var item = document.createElement('input');
+    item.type = 'radio';
+    item.name = 'account';
+    item.id = data.name;
+    if (data.name == Config.currentUser) item.checked = true;
+    item.onclick = function() {
+      chrome.cookies.get({ url: "http://www.hatena.ne.jp/", name: "rk"}, function(cookie) {
+        Config.changeCookie(cookie, data.rk);
+        Config.currentUser = data.name;
+        Config.reload();
+      });
+    }
+    var li = document.createElement('li');
+    li.appendChild(item);
+    var label = document.createElement('label');
+    label.setAttribute('for', data.name);
+    label.textContent = data.name;
+    li.appendChild(label);
+    document.f.appendChild(li);
+  });
+}
+</script>
+<form name="f">
+</form>
