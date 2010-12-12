@@ -38,6 +38,7 @@ Bob = {
     } catch (e) {
       this.notification('Error!', 'Syntax error.');
       console.log(e);
+      return false;
     }
     var jadge = data.every(function(e) {
       var count = 0;
